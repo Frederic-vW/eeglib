@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# read and parse Siemens Trio physio log files
 # FvW 12/2017
+# read and parse Siemens Trio physio log files
+# Example:
+# 	from triolog import triolog
+#	t, data = triolog("test.resp", doplot=True)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,6 +33,7 @@ def triolog(filename, doplot=False):
     """
     
     # --- read in all data ---
+    #print("[+] File: {:s}".format(filename))
     filedata = []
     with open(filename, "rb") as f:
 	for l in f: filedata.append(l.strip("\n"))
@@ -42,7 +46,7 @@ def triolog(filename, doplot=False):
     # --- parse sampling rate ---
     l = filedata[idx_samplerate]
     fs = float(l[l.find(":")+2:])
-    print("[+] Sampling rate: {:.2f} Hz".format(fs))
+    #print("[+] Sampling rate: {:.2f} Hz".format(fs))
     
     # --- parse data ---
     l = filedata[idx_samplerate+1]
@@ -56,8 +60,10 @@ def triolog(filename, doplot=False):
     for trig in trigs:
 	data = np.delete(data, np.where(data==trig)[0])
     
+    # --- time axis ---
+    t = np.arange(len(data))/fs
+    
     if doplot:
-	t = np.arange(len(data))/fs  # time axis
 	fig = plt.figure(1, figsize=(20, 4))
 	fig.patch.set_facecolor("white")
 	plt.plot(t, data, "-k", linewidth=1)
@@ -73,7 +79,6 @@ def main():
     fname0 = "test.puls"
     fname1 = "test.resp"
     fname = fname0
-    print("[+] File: {:s}".format(fname))
     triolog(fname, doplot=True)
 
 if __name__ == "__main__":
