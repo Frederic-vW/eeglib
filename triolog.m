@@ -57,7 +57,7 @@ else
     s = {l};
 end
 % if you have at least Matlab2013b, you can substitute the
-% last block of code, starting with 'w = ', by:
+% last block of code, starting with 'sp = ', by:
 % s = strsplit(l, ' ');
 
 %disp('[+] Converting strings to numbers...')
