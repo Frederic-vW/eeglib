@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+
+<head>
+  <script>
+  var offsets = {"syd": 11, "kie": 2, "bai": -3}
+  var times = {"syd": null, "kie": null, "bai": null}
+
+  function initTime() {
+    var d = new Date() // now
+    utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    for (let id of Object.keys(times)) {
+        off = offsets[id]
+        nd = new Date(utc + (3600000*off));
+        times[id] = nd
+        document.getElementById(id).value = jsToHtmlDate(nd)
+    }
+  }
+
+  function convertTZ(date, offFrom, offTo) {
+    utc = date - (offFrom * 3600000)
+    nd = new Date(utc + (3600000*offTo))
+    return nd
+  }
+
+  function addZero(x) {
+    var y = (x.toString().length == 1) ? y = "0" + x.toString() : x.toString()
+    return y
+  }
+
+  function jsToHtmlDate(d) {
+    let year = d.getFullYear().toString()
+        month = addZero(d.getMonth()+1)
+        date = addZero(d.getDate())
+        hours = addZero(d.getHours())
+        minutes = addZero(d.getMinutes())
+        seconds = addZero(d.getSeconds())
+    // format: 2000-12-24T16:03:23
+    newStr = year + "-" + month + "-" + date + "T"
+    newStr += (hours + ":" + minutes + ":" + seconds)
+    return newStr
+  }
+
+  function update(event) {
+    // update date that triggered the event
+    times[event.id] = new Date( document.getElementById(event.id).value )
+    // update remaining dates
+    var updateIds = Object.keys(times).filter(x => x != event.id)
+    for (let id of updateIds) {
+      times[id] = convertTZ(times[event.id], offsets[event.id], offsets[id])
+    }
+    for (let id of Object.keys(times)) {
+      document.getElementById(id).value = jsToHtmlDate(times[id])
+    }
+  }
+  </script>
+</head>
+
+<body onload="initTime()">
+
+  <p id="Sydney"><strong>Sydney</strong></p>
+  <p><input id="syd" type="datetime-local" required onchange="update(this)"></p>
+
+  <p id="Kiel"><strong>Kiel</strong></p>
+  <p><input id="kie" type="datetime-local" required onchange="update(this)"></p>
+
+  <p id="Buenos Aires"><strong>Buenos Aires</strong></p>
+  <p><input id="bai" type="datetime-local" required onchange="update(this)"></p>
+
+</body>
+
+</html>
